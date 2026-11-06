@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>interactive visualisation</title>
+    <script
+    src="https://cdn.plot.ly/plotly-2.26.0.min.js">
+    </script>
+    <style>
+              body {
+        background-color:lightyellow;
+      }
+        p {
+            text-align: center;
+        }
+    </style>
+</head>
+<body> 
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pathology markers</title>
+</head>
+<body>
+    
+            <div class="app-title">
+      <h1>Covid-19 & Pathology</h1>
+      
+      </div>
+
+    <p>An interactive dashboard and plots which explores the relationship between pathology results with Covid-positive and Covid-negative patients.</p>
+    <div class=two-column-layout">
+ <div class="column-left">
+
+<div id="myDiv">
+    
+</div>
+
+   
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+</head>
+
+<body>
+
+    <div id="ferritin"></div>
+    <div id="troponin"></div>
+    <div id="neutrophils"></div>
+    <div id="lymphocytes"></div>
+    <div id="crp"></div>
+
+
+    <h1>Interactive Dashboard</h1>
+
+<div class="controls">
+
+    <label for="outcome">Select Pathology Measure:</label>
+
+    <select id="outcome">
+        <option value="Ferritin">Ferritin</option>
+        <option value="Troponin">Troponin</option>
+        <option value="Neutrophils">Neutrophils</option>
+        <option value="Lymphocytes">Lymphocytes</option>
+        <option value="CRP">CRP</option>
+    </select>
+
+    <label for="group">Select Grouping Variable:</label>
+
+    <select id="group">
+        <option value="COVID">COVID Status</option>
+        <option value="male">Sex</option>
+        <option value="old">Age Group</option>
+        <option value="white">Ethnicity</option>
+    </select>
+
+</div>
+
+<div id="plot"></div>
+
+<script>
+
+const data = [
+{"COVID":0,"old":0,"male":0,"white":0,"Ferritin":80.7962,"Troponin":15.0776,"Neutrophils":2.9622,"Lymphocytes":1.009,"CRP":72.698,"sample":88},
+{"COVID":1,"old":0,"male":0,"white":0,"Ferritin":78.2594,"Troponin":14.5232,"Neutrophils":6.5465,"Lymphocytes":1.0095,"CRP":67.4789,"sample":23},
+{"COVID":0,"old":1,"male":0,"white":0,"Ferritin":80.1051,"Troponin":15.0196,"Neutrophils":2.9655,"Lymphocytes":1.0044,"CRP":73.603,"sample":33},
+{"COVID":1,"old":1,"male":0,"white":0,"Ferritin":79.1869,"Troponin":14.8105,"Neutrophils":21.2747,"Lymphocytes":0.6642,"CRP":76.098,"sample":38},
+{"COVID":0,"old":0,"male":1,"white":0,"Ferritin":80.293,"Troponin":15.2164,"Neutrophils":2.9697,"Lymphocytes":1.0025,"CRP":85.2045,"sample":83},
+{"COVID":1,"old":0,"male":1,"white":0,"Ferritin":82.4478,"Troponin":15.3914,"Neutrophils":11.2725,"Lymphocytes":0.86,"CRP":92.2727,"sample":24},
+{"COVID":0,"old":1,"male":1,"white":0,"Ferritin":81.2627,"Troponin":15.1298,"Neutrophils":3.0922,"Lymphocytes":1.0068,"CRP":87.3127,"sample":35},
+{"COVID":1,"old":1,"male":1,"white":0,"Ferritin":81.1032,"Troponin":15.2505,"Neutrophils":17.6567,"Lymphocytes":0.71,"CRP":85.317,"sample":64},
+{"COVID":0,"old":0,"male":0,"white":1,"Ferritin":80.3315,"Troponin":15.1271,"Neutrophils":2.9658,"Lymphocytes":1.0038,"CRP":72.0842,"sample":468},
+{"COVID":1,"old":0,"male":0,"white":1,"Ferritin":81.9102,"Troponin":14.701,"Neutrophils":8.5887,"Lymphocytes":0.9345,"CRP":74.6818,"sample":176},
+{"COVID":0,"old":1,"male":0,"white":1,"Ferritin":80.7869,"Troponin":15.1487,"Neutrophils":3.0018,"Lymphocytes":0.9997,"CRP":76.5904,"sample":195},
+{"COVID":1,"old":1,"male":0,"white":1,"Ferritin":81.2481,"Troponin":14.9856,"Neutrophils":20.0563,"Lymphocytes":0.6955,"CRP":77.0856,"sample":246},
+{"COVID":0,"old":0,"male":1,"white":1,"Ferritin":80.5322,"Troponin":14.9284,"Neutrophils":2.9699,"Lymphocytes":1.0067,"CRP":84.4454,"sample":353},
+{"COVID":1,"old":0,"male":1,"white":1,"Ferritin":80.7558,"Troponin":15.1274,"Neutrophils":9.952,"Lymphocytes":0.8898,"CRP":83.6312,"sample":190},
+{"COVID":0,"old":1,"male":1,"white":1,"Ferritin":81.1269,"Troponin":15.0935,"Neutrophils":2.9539,"Lymphocytes":0.9993,"CRP":89.6938,"sample":133},
+{"COVID":1,"old":1,"male":1,"white":1,"Ferritin":79.9424,"Troponin":14.9526,"Neutrophils":21.6836,"Lymphocytes":0.6442,"CRP":89.0144,"sample":241}
+];
+
+
+// UPDATE PLOT
+
+function updatePlot(){
+
+    let outcome =
+        document.getElementById("outcome").value;
+
+    let groupVar =
+        document.getElementById("group").value;
+
+    let group0 =
+        data.filter(d => d[groupVar] === 0);
+
+    let group1 =
+        data.filter(d => d[groupVar] === 1);
+
+    let mean0 =
+        weightedMean(group0, outcome);
+
+    let mean1 =
+        weightedMean(group1, outcome);
+
+    let labels;
+
+    if(groupVar === "COVID"){
+        labels = ["COVID No","COVID Yes"];
+    }
+    else if(groupVar === "male"){
+        labels = ["Female","Male"];
+    }
+    else if(groupVar === "old"){
+        labels = ["Not Old","Old"];
+    }
+    else{
+        labels = ["Non-White","White"];
+    }
+
+    const trace = {
+        x: labels,
+        y: [mean0, mean1],
+        type: "bar",
+        text: [
+            mean0.toFixed(2),
+            mean1.toFixed(2)
+        ],
+        textposition: "auto",
+        marker: {
+            color: ["pink","brown"]
+        },
+        hovertemplate:
+            "<b>%{x}</b><br>" +
+            outcome + ": %{y:.2f}<extra></extra>"
+    };
+
+    const layout = {
+        title:
+            "Weighted Mean " +
+            outcome +
+            " by " +
+            groupVar,
+        xaxis:{
+            title: groupVar
+        },
+        yaxis:{
+            title: outcome
+        }
+    };
+
+    Plotly.newPlot(
+        "plot",
+        [trace],
+        layout
+    );
+}
+
+// EVENT LISTENERS
+
+document
+.getElementById("outcome")
+.addEventListener("change", updatePlot);
+
+document
+.getElementById("group")
+.addEventListener("change", updatePlot);
+
+// INITIAL PLOT
+
+updatePlot();
+// Calculate weighted mean
+function weightedMean(rows, variable){
+
+    let weightedSum = 0;
+    let totalSample = 0;
+
+    rows.forEach(row => {
+        weightedSum += row[variable] * row.sample;
+        totalSample += row.sample;
+    });
+
+    return weightedSum / totalSample;
+}
+
+const covidNo = data.filter(d => d.COVID === 0);
+const covidYes = data.filter(d => d.COVID === 1);
+
+// Ferritin
+Plotly.newPlot("ferritin", [{
+    x: ["COVID No","COVID Yes"],
+    y: [
+        weightedMean(covidNo,"Ferritin"),
+        weightedMean(covidYes,"Ferritin")
+    ],
+    type: "bar",
+    marker:{color:["lightblue","lightgreen"]}
+}],{
+    title:"Weighted Mean Ferritin by COVID Status",
+    yaxis:{title:"Ferritin"}
+});
+
+// Troponin
+Plotly.newPlot("troponin", [{
+    x: ["COVID No","COVID Yes"],
+    y: [
+        weightedMean(covidNo,"Troponin"),
+        weightedMean(covidYes,"Troponin")
+    ],
+    type: "bar",
+    marker:{color:["lightblue","lightgreen"]}
+}],{
+    title:"Weighted Mean Troponin by COVID Status",
+    yaxis:{title:"Troponin"}
+});
+
+// Neutrophils
+Plotly.newPlot("neutrophils", [{
+    x: ["COVID No","COVID Yes"],
+    y: [
+        weightedMean(covidNo,"Neutrophils"),
+        weightedMean(covidYes,"Neutrophils")
+    ],
+    type: "bar",
+    marker:{color:["lightblue","lightgreen"]}
+}],{
+    title:"Weighted Mean Neutrophils by COVID Status",
+    yaxis:{title:"Neutrophils"}
+});
+
+// Lymphocytes
+Plotly.newPlot("lymphocytes", [{
+    x: ["COVID No","COVID Yes"],
+    y: [
+        weightedMean(covidNo,"Lymphocytes"),
+        weightedMean(covidYes,"Lymphocytes")
+    ],
+    type: "bar",
+    marker:{color:["lightblue","lightgreen"]}
+}],{
+    title:"Weighted Mean Lymphocytes by COVID Status",
+    yaxis:{title:"Lymphocytes"}
+});
+
+// CRP
+Plotly.newPlot("crp", [{
+    x: ["COVID No","COVID Yes"],
+    y: [
+        weightedMean(covidNo,"CRP"),
+        weightedMean(covidYes,"CRP")
+    ],
+    type: "bar",
+    marker:{color:["lightblue","lightgreen"]}
+}],{
+    title:"Weighted Mean CRP by COVID Status",
+    yaxis:{title:"CRP"}
+});
+
+</script>
+</body>
+</html>
